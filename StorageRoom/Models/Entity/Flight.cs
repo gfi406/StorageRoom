@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StorageRoom.Models.Entity
 {
-    //[Table("Flight")]
+    [Table("Flight")]
     public class Flight : BaseEntity
     {
         public string? FlightNumber { get; set; } // Номер рейса

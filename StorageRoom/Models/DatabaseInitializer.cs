@@ -14,6 +14,7 @@ public class DatabaseInitializer
         _context = context;
     }
 
+    
     public async Task InitializeAsync()
     {
         // Применяем миграции, если они есть
@@ -22,27 +23,48 @@ public class DatabaseInitializer
         // Проверяем, есть ли уже данные
         if (!_context.Passengers.Any() && !_context.Flights.Any() && !_context.Baggages.Any())
         {
-            // Добавляем рейсы
-            var flight1 = new Flight { FlightNumber = "", DepartureTime = DateTime.UtcNow.AddHours(2), ArrivalTime = DateTime.UtcNow.AddHours(5) };
-            //{ flightnumber = "ab123", departuretime = datetime.utcnow.addhours(2), arrivaltime = datetime.utcnow.addhours(5) };
+            var random = new Random();
 
+            // Генерация 5 случайных рейсов
+            for (int i = 0; i < 5; i++)
+            {
+                var flight = new Flight
+                {
+                    FlightNumber = $"AB{random.Next(100, 999)}", // случайный номер рейса
+                    DepartureTime = DateTime.UtcNow.AddHours(random.Next(1, 12)),
+                    ArrivalTime = DateTime.UtcNow.AddHours(random.Next(13, 24))
+                };
 
-            await _context.Flights.AddRangeAsync(flight1);
-            // Добавляем пассажиров
-            //var passenger1 = new Passenger { FirstName = "Иван", LastName = "Иванов", Age = 24};
+                await _context.Flights.AddAsync(flight);
 
+                // Генерация пассажиров для каждого рейса
+                for (int j = 0; j < random.Next(2, 6); j++) // от 2 до 5 пассажиров на рейс
+                {
+                    var passenger = new Passenger
+                    {
+                        FirstName = $"Passenger{j}",
+                        LastName = $"Last{j}",
+                        Age = random.Next(18, 65),
+                        Flight = flight
+                    };
 
-            //await _context.Passengers.AddRangeAsync(passenger1, passenger2);
+                    await _context.Passengers.AddAsync(passenger);
 
+                    // Генерация багажа для каждого пассажира (не более 2х)
+                    var baggageCount = random.Next(0, 3); // 0, 1 или 2 багажа
+                    for (int k = 0; k < baggageCount; k++)
+                    {
+                        var baggage = new Baggage
+                        {
+                            Weight = (float)random.NextDouble() * 30 + 5, // вес от 5 до 35 кг
+                            Passenger = passenger
+                        };
+                        await _context.Baggages.AddAsync(baggage);
+                    }
+                }
+            }
 
-
-            //// Добавляем багаж
-            //var baggage1 = new Baggage { Weight = 20.5f, Passenger = passenger1 };
-
-
-            //await _context.Baggages.AddRangeAsync(baggage1, baggage2);
-
-            // Сохраняем изменения
+            // Сохраняем изменения в базу
             await _context.SaveChangesAsync();
         }
     }

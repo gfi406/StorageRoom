@@ -7,9 +7,10 @@ namespace StorageRoom
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
+        public DbSet<Baggage> Baggages { get; set; }
         public DbSet<Passenger> Passengers { get; set; }
         public DbSet<Flight> Flights { get; set; }
-        public DbSet<Baggage> Baggages { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
