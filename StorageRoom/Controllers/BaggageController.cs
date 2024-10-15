@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+[Route("api/[controller]")]
+[ApiController]
 public class BaggageController : Controller
 {
     private readonly IBaggageService _baggageService;
@@ -69,6 +71,31 @@ public class BaggageController : Controller
         };
         return Ok(baggageDto);
     }
+
+    [HttpPost(Name ="AddBaggage")]
+    public async Task<ActionResult<Baggage>> AddBaggage(Baggage baggage)
+    {
+        var createdBaggage = await _baggageService.AddBaggegeAsync(baggage);
+        return CreatedAtAction(nameof(GetBaggageById), new {id = createdBaggage.Id},createdBaggage);
+    }
+    [HttpPost("{id}",Name = "UpdateBaggage")]
+    public async Task<ActionResult<Baggage>> UpdateBaggage(Guid id, Baggage baggage)
+    {
+        if (id != baggage.Id)
+        {
+            return BadRequest();
+        }
+        var updatedBaggage = await _baggageService.UpdateBaggageAsync(baggage);
+        return Ok(updatedBaggage);
+    }
+    [HttpDelete("{id}",Name ="DeliteBaggabe")]
+    public async Task<IActionResult> DeliteBaggabe(Guid id)
+    {
+        await _baggageService.DeleteBaggageAsync(id);
+        return Ok(); 
+    }
+
+
 
 }
 

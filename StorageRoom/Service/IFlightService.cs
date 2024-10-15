@@ -1,6 +1,6 @@
 ﻿using StorageRoom.Models.Entity;
 
-namespace StorageRoom.Service.serv
+namespace StorageRoom.Service
 {
     public interface IFlightService
     {

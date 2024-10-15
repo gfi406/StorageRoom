@@ -47,7 +47,7 @@ public class PassengerController : ControllerBase
         return Ok(passengerDtos);
     }
     [HttpGet("{id}", Name = "GetPassengerById")]
-    public async Task<ActionResult<PassengerDto>> GetPassengerByIdAsync(Guid id)
+    public async Task<ActionResult<PassengerDto>> GetPassengerById(Guid id)
     {
         var passenger = await _passengerService.GetPassengerByIdAsync(id);
         if (passenger == null)
@@ -84,7 +84,7 @@ public class PassengerController : ControllerBase
     public async Task<ActionResult<Passenger>> AddPassenger(Passenger passenger)
     {
         var createdPassenger = await _passengerService.AddPassengerAsync(passenger);
-        return CreatedAtAction(nameof(GetPassengerByIdAsync), new { id = createdPassenger.Id }, createdPassenger);
+        return CreatedAtAction(nameof(GetPassengerById), new { id = createdPassenger.Id }, createdPassenger);
     }
 
     [HttpPut("{id}", Name = "UpdatePassenger")]
@@ -103,7 +103,7 @@ public class PassengerController : ControllerBase
     public async Task<IActionResult> DeletePassenger(Guid id)
     {
         await _passengerService.DeletePassengerAsync(id);
-        return NoContent();
+        return Ok();
     }
 
     
