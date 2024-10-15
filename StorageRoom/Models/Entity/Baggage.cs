@@ -6,11 +6,10 @@ namespace StorageRoom.Models.Entity
     [Table("Baggage")]
     public class Baggage : BaseEntity
     {
-        public string? BaggageTag { get; set; } // Тег багажа
-        public double Weight { get; set; }     // Вес багажа
-
-        // Измените тип PassengerId на Guid
-        public Guid PassengerId { get; set; } // Внешний ключ на пассажира
-        public Passenger Passenger { get; set; } // Связь с пассажиром
+        public string? BaggageTag { get; set; } 
+        public double Weight { get; set; }     
+        
+        public Guid PassengerId { get; set; } 
+        public Passenger Passenger { get; set; } 
     }
 }

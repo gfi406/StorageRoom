@@ -5,7 +5,7 @@ using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Добавляем контекст базы данных с поддержкой PostgreSQL
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IPassengerService, PassengerService>();
@@ -24,16 +24,16 @@ using (var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     try
     {
-        // Проверяем, возможно ли подключиться к базе данных
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
         dbContext.Database.CanConnect();
-        Console.WriteLine("Успешное подключение к базе данных.");
+        Console.WriteLine("Connection is Ok");
         var initializer = new DatabaseInitializer(dbContext);
         await initializer.InitializeAsync();
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Ошибка подключения к базе данных: {ex.Message}");
-        throw new Exception("Не удалось подключиться к базе данных. Проверьте настройки подключения.");
+        Console.WriteLine($"Error: {ex.Message}");
+        throw new Exception("Connection error");
     }
 }
 
