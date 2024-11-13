@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using StorageRoom;
 using System;
+using RabbitMQ.Client;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,24 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
     });
+
+builder.Services.AddSingleton(sp => new ConnectionFactory
+{
+    HostName = "localhost",  // Используйте ваш хост RabbitMQ
+});
+builder.Services.AddSingleton(sp => sp.GetRequiredService<ConnectionFactory>().CreateConnection());
+builder.Services.AddSingleton(sp => sp.GetRequiredService<IConnection>().CreateModel());
+
+
+
+
+
+
+
+
+
+
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

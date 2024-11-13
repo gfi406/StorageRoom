@@ -4,12 +4,15 @@ using StorageRoom.Models.Dtos;
 using StorageRoom.Models.Entity;
 using StorageRoom.Service;
 using System;
+using RabbitMQ.Client;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class BaggageController : Controller
 {
     private readonly IBaggageService _baggageService;
+
 
     public BaggageController(IBaggageService baggageService)
     {
