@@ -1,16 +1,28 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Npgsql;
 using StorageRoom;
+using StorageRoom.Service;
+using StorageRoom.Service.serv;
 using System;
 using RabbitMQ.Client;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddResponseCompression( options =>
+{
+    options.EnableForHttps = true;
+});
 
-// ��������� �������� ���� ������ � ���������� PostgreSQL
+// Connection PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IPassengerService, PassengerService>();
+
+
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers()
@@ -19,32 +31,20 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
     });
-
-builder.Services.AddSingleton(sp => new ConnectionFactory
-{
-    HostName = "localhost",  // Используйте ваш хост RabbitMQ
-});
-builder.Services.AddSingleton(sp => sp.GetRequiredService<ConnectionFactory>().CreateConnection());
-builder.Services.AddSingleton(sp => sp.GetRequiredService<IConnection>().CreateModel());
-
-
-
-
-
-
-
-
-
+builder.Services.AddScoped<IBaggageService, BaggageService>();
+builder.Services.AddScoped<IFlightService,FlightService>();
+builder.Services.AddScoped<IPassengerService,PassengerService>();
 
 
 var app = builder.Build();
+
 
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     try
     {
-        // ���������, �������� �� ������������ � ���� ������
+        // test connect to our database
         dbContext.Database.CanConnect();
         Console.WriteLine("Connection is Ok");
         var initializer = new DatabaseInitializer(dbContext);
@@ -67,12 +67,12 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseResponseCompression();
 app.UseRouting();
 
 
 app.UseAuthorization();
-
+app.MapControllers();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
