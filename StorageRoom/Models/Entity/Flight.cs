@@ -16,6 +16,6 @@ namespace StorageRoom.Models.Entity
         // Время прибытия
 
         
-        public List<Passenger> Passengers { get; set; }
+        public List<Passenger>? Passengers { get; set; }
     }
 }

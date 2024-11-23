@@ -17,8 +17,8 @@ public class PassengerController : ControllerBase
         _passengerService = passengerService;
     }
 
-    [HttpGet( Name = "GetPassengers")]
-    public async Task<ActionResult<List<Passenger>>> GetPassengers() 
+    [HttpGet(Name = "GetPassengers")]
+    public async Task<ActionResult<List<Passenger>>> GetPassengers()
     {
         var passengers = await _passengerService.GetPassengersAsync();
         if (passengers == null)
@@ -37,7 +37,7 @@ public class PassengerController : ControllerBase
         {       
                 // жесточайший костыль ⬇️⬇️⬇️ надо поменять!!
                 new LinkDto(Url.Link("GetPassengers",null), "self", "GET"),
-                new LinkDto(Url.Link("GetPassengerById", new { id = passenger.Id }), "get_by_id", "GET"),                
+                new LinkDto(Url.Link("GetPassengerById", new { id = passenger.Id }), "get_by_id", "GET"),
                 new LinkDto(Url.Link("UpdatePassenger", new { id = passenger.Id }), "update_passenger", "PUT"),
                 new LinkDto(Url.Link("DeletePassenger", new { id = passenger.Id }), "delete_passenger", "DELETE"),
                 new LinkDto(Url.Link("AddPassenger", null), "add_passenger", "POST")
@@ -47,7 +47,7 @@ public class PassengerController : ControllerBase
         return Ok(passengerDtos);
     }
     [HttpGet("{id}", Name = "GetPassengerById")]
-    public async Task<ActionResult<PassengerDto>> GetPassengerByIdAsync(Guid id)
+    public async Task<ActionResult<PassengerDto>> GetPassengerById(Guid id)
     {
         var passenger = await _passengerService.GetPassengerByIdAsync(id);
         if (passenger == null)
@@ -62,7 +62,7 @@ public class PassengerController : ControllerBase
             LastName = passenger.LastName,
             Flight = passenger.Flight,
             Baggages = passenger.Baggages,
-             Links = new List<LinkDto>
+            Links = new List<LinkDto>
             {
                 // жесточайший костыль ⬇️⬇️⬇️ надо поменять!!
                 new LinkDto(Url.Link("GetPassengers",null), "get_all", "GET"),
@@ -73,8 +73,8 @@ public class PassengerController : ControllerBase
             }
         };
 
-       
-       
+
+
 
         return Ok(passengerDto);
     }
@@ -84,7 +84,7 @@ public class PassengerController : ControllerBase
     public async Task<ActionResult<Passenger>> AddPassenger(Passenger passenger)
     {
         var createdPassenger = await _passengerService.AddPassengerAsync(passenger);
-        return CreatedAtAction(nameof(GetPassengerByIdAsync), new { id = createdPassenger.Id }, createdPassenger);
+        return CreatedAtAction(nameof(GetPassengerById), new { id = createdPassenger.Id }, createdPassenger);
     }
 
     [HttpPut("{id}", Name = "UpdatePassenger")]
@@ -103,8 +103,8 @@ public class PassengerController : ControllerBase
     public async Task<IActionResult> DeletePassenger(Guid id)
     {
         await _passengerService.DeletePassengerAsync(id);
-        return NoContent();
+        return Ok();
     }
 
-    
+
 }

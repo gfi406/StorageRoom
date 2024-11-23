@@ -9,6 +9,11 @@ using StorageRoom.Service.serv;
 using System;
 using RabbitMQ.Client;
 using System.Text;
+using EasyNetQ;
+
+
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddResponseCompression( options =>
@@ -19,7 +24,19 @@ builder.Services.AddResponseCompression( options =>
 // Connection PostgreSQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddScoped<IPassengerService, PassengerService>();
+builder.Services.AddScoped<IBaggageService, BaggageService>();
+builder.Services.AddScoped<IFlightService, FlightService>();
+builder.Services.AddScoped<IPassengerService, PassengerService>();
+
+
+// Connection RbitMQ
+var bus = RabbitHutch.CreateBus(builder.Configuration.GetConnectionString("AutoRabbitMQ"),
+    register => register.EnableNewtonsoftJson());
+
+
+builder.Services.AddSingleton<IBus>(bus);
 
 
 
@@ -31,9 +48,7 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
     });
-builder.Services.AddScoped<IBaggageService, BaggageService>();
-builder.Services.AddScoped<IFlightService,FlightService>();
-builder.Services.AddScoped<IPassengerService,PassengerService>();
+
 
 
 var app = builder.Build();
