@@ -7,6 +7,6 @@ public class PassengerDto
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public List<Baggage> Baggages { get; set; }
-    public Flight Flight { get; set; }
+    public Guid FlightId { get; set; }
     public List<LinkDto> Links { get; set; } = new List<LinkDto>();
 }

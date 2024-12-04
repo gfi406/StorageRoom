@@ -8,7 +8,7 @@ namespace StorageRoom.Models.Dtos
         public double Weight { get; set; }
         public string BaggageTag { get; set; }
 
-        public Passenger Passenger { get; set; }
+        public Guid PassengerId { get; set; }
 
         public List<LinkDto> Links { get; set; } = new List<LinkDto>(); 
 

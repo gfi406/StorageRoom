@@ -9,11 +9,13 @@ namespace StorageRoom.Service.serv
     public class BaggageService : IBaggageService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IModel _rabbitChannel;
-        public BaggageService(ApplicationDbContext context, IModel rabbitChannel)
+     
+        private readonly RabbitMqChannelFactory _channelFactory;        
+        public BaggageService(ApplicationDbContext context, RabbitMqChannelFactory channelFactory)
         {
             _context = context;
-            _rabbitChannel = rabbitChannel;
+            
+            _channelFactory = channelFactory;   
         }
 
         private static List<Baggage> baggages = new List<Baggage>();
@@ -39,7 +41,7 @@ namespace StorageRoom.Service.serv
         {
             _context.Baggages.Update(baggage);
             await _context.SaveChangesAsync();
-            SendBaggageToQueue(baggage);
+           
             return baggage;
         }
         public async Task DeleteBaggageAsync(Guid id)
@@ -53,19 +55,19 @@ namespace StorageRoom.Service.serv
 
 
         }
-        private void SendBaggageToQueue(Baggage baggage)
-        {
-            string message = $"Baggage Updated: {baggage.BaggageTag}, Weight: {baggage.Weight}, PassengerId: {baggage.PassengerId}";
-            var body = Encoding.UTF8.GetBytes(message);
+        //private void SendBaggageToQueue(Baggage baggage)
+        //{
+        //    string message = $"Baggage Updated: {baggage.BaggageTag}, Weight: {baggage.Weight}, PassengerId: {baggage.PassengerId}";
+        //    var body = Encoding.UTF8.GetBytes(message);
 
-            _rabbitChannel.BasicPublish(
-                exchange: "",
-                routingKey: "baggage_queue",  // Используйте вашу очередь
-                basicProperties: null,
-                body: body);
+        //    _rabbitChannel.BasicPublish(
+        //        exchange: "",
+        //        routingKey: "baggage_queue",  // Используйте вашу очередь
+        //        basicProperties: null,
+        //        body: body);
 
-            Console.WriteLine(" [x] Sent {0}", message);
-        }
+        //    Console.WriteLine(" [x] Sent {0}", message);
+        //}
 
 
     }

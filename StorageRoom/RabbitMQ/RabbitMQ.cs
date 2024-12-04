@@ -11,11 +11,14 @@ namespace StorageRoom.RabbitMQ
             {
                 BaggageTag = baggage.BaggageTag,
                 Weight = baggage.Weight,
-                //PassengerId = baggage.PassengerId,
-               // PassengerName = $"{baggage.Passenger.FirstName} {baggage.Passenger.LastName}"
+                BaggageId = baggage.Id,
+                PassengerName = $"{baggage.Passenger.FirstName} {baggage.Passenger.LastName}"
+
             };
             return message;
         }
+        //PassengerId = baggage.PassengerId,
+        // PassengerName = $"{baggage.Passenger.FirstName} {baggage.Passenger.LastName}"
 
         public static PassengerMessages ToPassengerMessage(this Passenger passenger)
         {

@@ -25,19 +25,31 @@ builder.Services.AddResponseCompression( options =>
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<IPassengerService, PassengerService>();
-builder.Services.AddScoped<IBaggageService, BaggageService>();
-builder.Services.AddScoped<IFlightService, FlightService>();
-builder.Services.AddScoped<IPassengerService, PassengerService>();
+
+
 
 
 // Connection RbitMQ
 var bus = RabbitHutch.CreateBus(builder.Configuration.GetConnectionString("AutoRabbitMQ"),
     register => register.EnableNewtonsoftJson());
+builder.Services.AddSingleton<IConnection>(sp =>
+{
+    var connectionFactory = new ConnectionFactory()
+    {
+        Uri = new Uri(builder.Configuration.GetConnectionString("AutoRabbitMQ"))
+    };
+    return connectionFactory.CreateConnection();
+});
 
+builder.Services.AddScoped<RabbitMqChannelFactory>();
 
 builder.Services.AddSingleton<IBus>(bus);
-
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.EnableAnnotations();
+    options.DocInclusionPredicate((docName, apiDesc) => true);
+});
 
 
 // Add services to the container.
@@ -49,6 +61,9 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
     });
 
+builder.Services.AddScoped<IPassengerService, PassengerService>();
+builder.Services.AddScoped<IBaggageService, BaggageService>();
+builder.Services.AddScoped<IFlightService, FlightService>();
 
 
 var app = builder.Build();
@@ -71,6 +86,11 @@ using (var scope = app.Services.CreateScope())
         throw new Exception("Connection error");
     }
 }
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -88,8 +108,8 @@ app.UseRouting();
 
 app.UseAuthorization();
 app.MapControllers();
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+//app.mapcontrollerroute(
+//    name: "default",
+//    pattern: "{controller=home}/{action=index}/{id?}");
 
 app.Run();

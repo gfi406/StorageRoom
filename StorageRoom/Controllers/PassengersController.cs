@@ -31,8 +31,8 @@ public class PassengerController : ControllerBase
             Id = passenger.Id,
             FirstName = passenger.FirstName,
             LastName = passenger.LastName,
-            Flight = passenger.Flight,
-            Baggages = passenger.Baggages,
+            FlightId = passenger.Flight.Id,
+           // Baggages = passenger.Baggages,
             Links = new List<LinkDto>
         {       
                 // жесточайший костыль ⬇️⬇️⬇️ надо поменять!!
@@ -60,8 +60,8 @@ public class PassengerController : ControllerBase
             Id = passenger.Id,
             FirstName = passenger.FirstName,
             LastName = passenger.LastName,
-            Flight = passenger.Flight,
-            Baggages = passenger.Baggages,
+            FlightId = passenger.Flight.Id,
+            //Baggages = passenger.Baggages,
             Links = new List<LinkDto>
             {
                 // жесточайший костыль ⬇️⬇️⬇️ надо поменять!!
